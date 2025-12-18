@@ -31,7 +31,6 @@
             pointer-events: none; transition: opacity 0.5s;
         }
 
-        /* Remarcado de bordes agresivo */
         .card-container {
             border: 2px solid transparent;
             transition: all 0.2s ease-in-out;
@@ -39,7 +38,6 @@
         .light .card-container { border-color: #94a3b8; background: #ffffff; }
         .dark .card-container { border-color: #334155; background: rgba(15, 23, 42, 0.85); }
 
-        /* Estilo Garantizado para Selects */
         select, input {
             background-color: transparent;
             border-width: 2px;
@@ -48,12 +46,8 @@
         .light select, .light input { border-color: #cbd5e1; color: #0f172a; background-color: #ffffff; }
         .dark select, .dark input { border-color: #334155; color: #f8fafc; background-color: #1e293b; }
         
-        select option {
-            background-color: #fff; color: #000;
-        }
-        .dark select option {
-            background-color: #1e293b; color: #fff;
-        }
+        select option { background-color: #fff; color: #000; }
+        .dark select option { background-color: #1e293b; color: #fff; }
 
         .glass { backdrop-filter: blur(16px); }
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
@@ -66,8 +60,8 @@
 
     <div id="three-canvas"></div>
 
-    <!-- Navegación con TABS -->
-    <nav class="sticky top-0 z-40 glass border-b-2 border-slate-400 dark:border-white/10 px-4 py-3">
+    <!-- Navegación: Sticky solo en Desktop (md:sticky) -->
+    <nav class="relative md:sticky top-0 z-40 glass border-b-2 border-slate-400 dark:border-white/10 px-4 py-3">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-2">
                 <div class="bg-accent p-1.5 rounded-lg text-white"><i data-lucide="zap"></i></div>
@@ -112,9 +106,8 @@
 
     <main class="max-w-7xl mx-auto px-4 py-6">
         
-        <!-- TAB: DASHBOARD (REGISTRAR) -->
+        <!-- TAB: DASHBOARD -->
         <section id="tab-dashboard" class="tab-content active">
-            <!-- Metrics Summary -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                 <div class="card-container p-5 rounded-3xl border-b-4 border-b-accent">
                     <p class="text-slate-500 text-[10px] font-black uppercase">Saldo General</p>
@@ -131,10 +124,13 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Registro Form -->
-                <div class="lg:col-span-4">
+                <div class="lg:col-span-4 space-y-4">
+                    <!-- Registro Form -->
                     <div class="card-container p-6 rounded-3xl">
-                        <h3 class="font-bold mb-4 text-accent italic uppercase text-xs tracking-widest"><i data-lucide="plus-circle" class="inline w-4 h-4 mr-1"></i> Nueva Operación</h3>
+                        <h3 class="font-bold mb-4 text-accent italic uppercase text-xs tracking-widest flex justify-between">
+                            <span><i data-lucide="plus-circle" class="inline w-4 h-4 mr-1"></i> Registro</span>
+                            <button type="button" onclick="saveTemplate()" class="text-[10px] text-slate-400 hover:text-accent font-bold">⭐ GUARDAR PLANTILLA</button>
+                        </h3>
                         <form id="financeForm" class="space-y-4">
                             <input type="hidden" id="editId">
                             <input type="text" id="desc" placeholder="Concepto (Ejem: Alquiler)" class="w-full rounded-xl p-3" required>
@@ -154,16 +150,23 @@
                                 <option value="Transporte">Transporte</option>
                                 <option value="Otros">Otros</option>
                             </select>
-                            <button type="submit" id="submitBtn" class="w-full bg-accent text-white font-black py-4 rounded-2xl shadow-xl hover:scale-[1.01] active:scale-95 transition-all">GUARDAR REGISTRO</button>
+                            <button type="submit" id="submitBtn" class="w-full bg-accent text-white font-black py-4 rounded-2xl shadow-xl transition-all">GUARDAR REGISTRO</button>
                         </form>
+                    </div>
+
+                    <!-- Módulo de Plantillas (Recurrentes) -->
+                    <div class="card-container p-4 rounded-3xl">
+                        <h4 class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Gastos/Ingresos Frecuentes</h4>
+                        <div id="templateList" class="flex flex-wrap gap-2">
+                            <!-- Dinámico -->
+                        </div>
                     </div>
                 </div>
 
-                <!-- Historial List -->
                 <div class="lg:col-span-8">
                     <div class="card-container rounded-3xl overflow-hidden flex flex-col min-h-[500px]">
                         <div class="p-5 border-b-2 border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
-                            <span class="font-black text-xs uppercase tracking-widest italic">Movimientos Recientes</span>
+                            <span class="font-black text-xs uppercase tracking-widest italic">Movimientos</span>
                             <div class="flex gap-2">
                                 <select id="yearFilter" class="rounded-lg px-2 py-1 text-[10px] font-bold"></select>
                                 <select id="monthFilter" class="rounded-lg px-2 py-1 text-[10px] font-bold"></select>
@@ -175,10 +178,9 @@
             </div>
         </section>
 
-        <!-- TAB: REPORTS (CONSOLIDADO) -->
+        <!-- TAB: REPORTS -->
         <section id="tab-reports" class="tab-content">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <!-- Tabla Mensual -->
                 <div class="lg:col-span-8">
                     <div class="card-container p-6 rounded-3xl">
                         <div class="flex justify-between items-center mb-6">
@@ -195,15 +197,11 @@
                                         <th class="p-4">RESULTADO</th>
                                     </tr>
                                 </thead>
-                                <tbody id="monthlyReportBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-                                    <!-- Dinámico -->
-                                </tbody>
+                                <tbody id="monthlyReportBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-
-                <!-- Resumen Categorías y Años -->
                 <div class="lg:col-span-4 space-y-6">
                     <div class="card-container p-6 rounded-3xl">
                         <h3 class="text-center text-[10px] font-black mb-4 uppercase tracking-widest italic">Gastos por Categoría</h3>
@@ -220,9 +218,11 @@
     </main>
 
     <script>
-        // --- ESTADO ---
+        // --- ESTADO (Respeta keys de v6) ---
         let transactions = JSON.parse(localStorage.getItem('q_data_v6')) || [];
+        let templates = JSON.parse(localStorage.getItem('q_templates_v6')) || [];
         let config = JSON.parse(localStorage.getItem('q_config_v6')) || { theme: 'dark', animation: true, lastTab: 'dashboard' };
+        
         let myChart = null;
         let animationFrameId;
         const monthsNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -258,43 +258,52 @@
             document.getElementById('date').valueAsDate = new Date();
             updateDashboard();
             updateReports();
+            renderTemplates();
             lucide.createIcons();
         }
 
-        function switchTab(tabId) {
-            config.lastTab = tabId;
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
+        // --- PLANTILLAS (RECURRENTES) ---
+        function saveTemplate() {
+            const desc = document.getElementById('desc').value;
+            const amount = document.getElementById('amount').value;
+            if(!desc || !amount) return alert("Llena descripción y monto para guardar plantilla");
             
-            const btnD = document.getElementById('btn-dashboard');
-            const btnR = document.getElementById('btn-reports');
-            
-            if(tabId === 'dashboard') {
-                btnD.classList.add('bg-accent', 'text-white'); btnD.classList.remove('text-slate-500');
-                btnR.classList.remove('bg-accent', 'text-white'); btnR.classList.add('text-slate-500');
-                updateDashboard();
-            } else {
-                btnR.classList.add('bg-accent', 'text-white'); btnR.classList.remove('text-slate-500');
-                btnD.classList.remove('bg-accent', 'text-white'); btnD.classList.add('text-slate-500');
-                updateReports();
-            }
-            saveConfig();
+            const newTemplate = {
+                id: Date.now(),
+                desc: desc,
+                amount: amount,
+                type: document.getElementById('type').value,
+                category: document.getElementById('category').value
+            };
+            templates.push(newTemplate);
+            localStorage.setItem('q_templates_v6', JSON.stringify(templates));
+            renderTemplates();
         }
 
-        function updateAllFilters() {
-            const years = [...new Set(transactions.map(t => t.date.split('-')[0]))];
-            const nowY = new Date().getFullYear();
-            if (!years.includes(nowY.toString())) years.push(nowY.toString());
-            years.sort((a,b) => b-a);
+        function renderTemplates() {
+            const container = document.getElementById('templateList');
+            container.innerHTML = templates.map(t => `
+                <div class="flex items-center bg-slate-400/10 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 gap-2">
+                    <button onclick="applyTemplate(${t.id})" class="text-[10px] font-bold truncate max-w-[80px]">${t.desc}</button>
+                    <button onclick="deleteTemplate(${t.id})" class="text-rose-500 text-xs">×</button>
+                </div>
+            `).join('');
+        }
 
-            const yHtml = years.map(y => `<option value="${y}">${y}</option>`).join('');
-            document.getElementById('yearFilter').innerHTML = yHtml;
-            document.getElementById('consolidatedYearFilter').innerHTML = yHtml;
+        function applyTemplate(id) {
+            const t = templates.find(x => x.id === id);
+            if(!t) return;
+            document.getElementById('desc').value = t.desc;
+            document.getElementById('amount').value = t.amount;
+            document.getElementById('type').value = t.type;
+            document.getElementById('category').value = t.category;
+            document.getElementById('date').valueAsDate = new Date();
+        }
 
-            let mHtml = '<option value="all">Todos los meses</option>';
-            monthsNames.forEach((m, i) => mHtml += `<option value="${String(i+1).padStart(2, '0')}">${m}</option>`);
-            document.getElementById('monthFilter').innerHTML = mHtml;
-            document.getElementById('monthFilter').value = String(new Date().getMonth()+1).padStart(2, '0');
+        function deleteTemplate(id) {
+            templates = templates.filter(x => x.id !== id);
+            localStorage.setItem('q_templates_v6', JSON.stringify(templates));
+            renderTemplates();
         }
 
         // --- DASHBOARD LOGIC ---
@@ -319,7 +328,7 @@
                         </div>
                         <div><p class="text-sm font-bold">${t.desc}</p><p class="text-[9px] font-black opacity-40">${t.category} | ${t.date}</p></div>
                     </div>
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 text-right">
                         <span class="font-black text-sm ${t.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}">${t.type === 'income' ? '+' : '-'}$${t.amount.toLocaleString()}</span>
                         <div class="flex opacity-0 group-hover:opacity-100 gap-2">
                             <button onclick="editItem(${t.id})"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
@@ -331,51 +340,62 @@
             lucide.createIcons();
         }
 
-        // --- REPORTS LOGIC ---
+        // --- OTROS MÉTODOS (IGUAL QUE V6) ---
+        function switchTab(tabId) {
+            config.lastTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const btnD = document.getElementById('btn-dashboard');
+            const btnR = document.getElementById('btn-reports');
+            if(tabId === 'dashboard') {
+                btnD.classList.add('bg-accent', 'text-white'); btnD.classList.remove('text-slate-500');
+                btnR.classList.remove('bg-accent', 'text-white'); btnR.classList.add('text-slate-500');
+                updateDashboard();
+            } else {
+                btnR.classList.add('bg-accent', 'text-white'); btnR.classList.remove('text-slate-500');
+                btnD.classList.remove('bg-accent', 'text-white'); btnD.classList.add('text-slate-500');
+                updateReports();
+            }
+            saveConfig();
+        }
+
+        function updateAllFilters() {
+            const years = [...new Set(transactions.map(t => t.date.split('-')[0]))];
+            const nowY = new Date().getFullYear();
+            if (!years.includes(nowY.toString())) years.push(nowY.toString());
+            years.sort((a,b) => b-a);
+            const yHtml = years.map(y => `<option value="${y}">${y}</option>`).join('');
+            document.getElementById('yearFilter').innerHTML = yHtml;
+            document.getElementById('consolidatedYearFilter').innerHTML = yHtml;
+            let mHtml = '<option value="all">Todos los meses</option>';
+            monthsNames.forEach((m, i) => mHtml += `<option value="${String(i+1).padStart(2, '0')}">${m}</option>`);
+            document.getElementById('monthFilter').innerHTML = mHtml;
+            document.getElementById('monthFilter').value = String(new Date().getMonth()+1).padStart(2, '0');
+        }
+
         function updateReports() {
             const year = document.getElementById('consolidatedYearFilter').value;
             const tbody = document.getElementById('monthlyReportBody');
             const catData = {};
             let html = '';
-
             monthsNames.forEach((name, i) => {
                 const mStr = String(i+1).padStart(2, '0');
                 const mTransactions = transactions.filter(t => t.date.startsWith(`${year}-${mStr}`));
                 let mInc = 0, mExp = 0;
-                
                 mTransactions.forEach(t => {
                     if(t.type === 'income') mInc += t.amount;
-                    else { 
-                        mExp += t.amount; 
-                        catData[t.category] = (catData[t.category] || 0) + t.amount;
-                    }
+                    else { mExp += t.amount; catData[t.category] = (catData[t.category] || 0) + t.amount; }
                 });
-                
                 const bal = mInc - mExp;
-                html += `
-                    <tr class="hover:bg-slate-400/5 transition">
-                        <td class="p-4 font-bold text-xs">${name}</td>
-                        <td class="p-4 text-emerald-500">+$${mInc.toLocaleString()}</td>
-                        <td class="p-4 text-rose-500">-$${mExp.toLocaleString()}</td>
-                        <td class="p-4 font-black ${bal >=0 ? 'text-accent' : 'text-rose-600'}">$${bal.toLocaleString()}</td>
-                    </tr>
-                `;
+                html += `<tr><td class="p-4 font-bold text-xs">${name}</td><td class="p-4 text-emerald-500">+$${mInc.toLocaleString()}</td><td class="p-4 text-rose-500">-$${mExp.toLocaleString()}</td><td class="p-4 font-black ${bal >=0 ? 'text-accent' : 'text-rose-600'}">$${bal.toLocaleString()}</td></tr>`;
             });
             tbody.innerHTML = html;
-
-            // Chart
             updateChart(catData);
-
-            // Yearly History
             const yYears = [...new Set(transactions.map(t => t.date.split('-')[0]))].sort((a,b) => b-a);
             document.getElementById('yearlySummaryBody').innerHTML = yYears.map(y => {
                 let yInc = 0, yExp = 0;
                 transactions.filter(t => t.date.startsWith(y)).forEach(t => t.type === 'income' ? yInc += t.amount : yExp += t.amount);
-                return `
-                    <div class="p-3 bg-slate-400/5 rounded-xl border-2 border-slate-300 dark:border-slate-700">
-                        <div class="flex justify-between font-black"><span>${y}</span> <span class="${yInc-yExp >=0 ? 'text-emerald-500' : 'text-rose-500'}">$${(yInc-yExp).toLocaleString()}</span></div>
-                    </div>
-                `;
+                return `<div class="p-3 bg-slate-400/5 rounded-xl border-2 border-slate-300 dark:border-slate-700 flex justify-between font-black"><span>${y}</span> <span class="${yInc-yExp >=0 ? 'text-emerald-500' : 'text-rose-500'}">$${(yInc-yExp).toLocaleString()}</span></div>`;
             }).join('');
         }
 
@@ -384,42 +404,21 @@
             if(myChart) myChart.destroy();
             if(Object.keys(data).length === 0) return;
             myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(data),
-                    datasets: [{
-                        data: Object.values(data),
-                        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'],
-                        borderWidth: 2, borderColor: config.theme === 'dark' ? '#0f172a' : '#ffffff'
-                    }]
-                },
+                type: 'doughnut', data: { labels: Object.keys(data), datasets: [{ data: Object.values(data), backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'], borderWidth: 2, borderColor: config.theme === 'dark' ? '#0f172a' : '#ffffff' }] },
                 options: { cutout: '75%', plugins: { legend: { display: false } }, maintainAspectRatio: false }
             });
         }
 
-        // --- FORM & DATA ---
         document.getElementById('financeForm').addEventListener('submit', e => {
             e.preventDefault();
             const id = document.getElementById('editId').value;
-            const data = {
-                id: id ? parseInt(id) : Date.now(),
-                desc: document.getElementById('desc').value,
-                amount: parseFloat(document.getElementById('amount').value),
-                date: document.getElementById('date').value,
-                type: document.getElementById('type').value,
-                category: document.getElementById('category').value
-            };
+            const data = { id: id ? parseInt(id) : Date.now(), desc: document.getElementById('desc').value, amount: parseFloat(document.getElementById('amount').value), date: document.getElementById('date').value, type: document.getElementById('type').value, category: document.getElementById('category').value };
             if(id) transactions = transactions.map(t => t.id == id ? data : t);
             else transactions.push(data);
-            
             document.getElementById('financeForm').reset();
             document.getElementById('editId').value = "";
-            document.getElementById('submitBtn').innerText = "GUARDAR REGISTRO";
             document.getElementById('date').valueAsDate = new Date();
-            
-            saveData();
-            updateAllFilters();
-            updateDashboard();
+            saveData(); updateDashboard();
         });
 
         function editItem(id) {
@@ -430,58 +429,24 @@
             document.getElementById('date').value = t.date;
             document.getElementById('type').value = t.type;
             document.getElementById('category').value = t.category;
-            document.getElementById('submitBtn').innerText = "ACTUALIZAR DATOS";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function deleteItem(id) {
-            if(confirm('¿Eliminar definitivamente?')) {
-                transactions = transactions.filter(t => t.id !== id);
-                saveData();
-                updateAllFilters();
-                updateDashboard();
-            }
-        }
-
-        // --- HELPERS ---
-        function applyTheme() {
-            const h = document.documentElement;
-            if(config.theme === 'dark') { h.classList.add('dark'); h.classList.remove('light'); }
-            else { h.classList.add('light'); h.classList.remove('dark'); }
-            document.getElementById('themeIcon').setAttribute('data-lucide', config.theme === 'dark' ? 'sun' : 'moon');
-            lucide.createIcons();
-        }
-
-        function applyAnimation() {
-            const dot = document.getElementById('animDot');
-            if(config.animation) { dot.style.left = '28px'; animate(); }
-            else { dot.style.left = '4px'; cancelAnimationFrame(animationFrameId); }
-        }
-
+        function deleteItem(id) { if(confirm('¿Eliminar?')) { transactions = transactions.filter(t => t.id !== id); saveData(); updateDashboard(); } }
+        function applyTheme() { const h = document.documentElement; if(config.theme === 'dark') { h.classList.add('dark'); h.classList.remove('light'); } else { h.classList.add('light'); h.classList.remove('dark'); } document.getElementById('themeIcon').setAttribute('data-lucide', config.theme === 'dark' ? 'sun' : 'moon'); lucide.createIcons(); }
+        function applyAnimation() { const dot = document.getElementById('animDot'); if(config.animation) { dot.style.left = '28px'; animate(); } else { dot.style.left = '4px'; cancelAnimationFrame(animationFrameId); } }
         function saveData() { localStorage.setItem('q_data_v6', JSON.stringify(transactions)); }
         function saveConfig() { localStorage.setItem('q_config_v6', JSON.stringify(config)); }
         function toggleModal() { document.getElementById('settingsModal').classList.toggle('hidden'); }
-
         document.getElementById('themeToggle').addEventListener('click', () => { config.theme = config.theme === 'dark' ? 'light' : 'dark'; applyTheme(); saveConfig(); });
         document.getElementById('animToggle').addEventListener('click', () => { config.animation = !config.animation; applyAnimation(); saveConfig(); location.reload(); });
         document.getElementById('settingsToggle').addEventListener('click', toggleModal);
         document.getElementById('yearFilter').addEventListener('change', updateDashboard);
         document.getElementById('monthFilter').addEventListener('change', updateDashboard);
         document.getElementById('consolidatedYearFilter').addEventListener('change', updateReports);
-
-        function exportData() {
-            const b = new Blob([JSON.stringify(transactions, null, 2)], {type: 'application/json'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'quantum_backup.json'; a.click();
-        }
-
-        document.getElementById('importFile').addEventListener('change', e => {
-            const r = new FileReader();
-            r.onload = ev => { transactions = JSON.parse(ev.target.result); saveData(); updateAllFilters(); updateDashboard(); alert('Importado'); };
-            r.readAsText(e.target.files[0]);
-        });
-
+        function exportData() { const b = new Blob([JSON.stringify(transactions, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'quantum_backup.json'; a.click(); }
+        document.getElementById('importFile').addEventListener('change', e => { const r = new FileReader(); r.onload = ev => { transactions = JSON.parse(ev.target.result); saveData(); updateDashboard(); }; r.readAsText(e.target.files[0]); });
         window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
-
         init();
     </script>
 </body>
